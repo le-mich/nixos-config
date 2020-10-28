@@ -239,8 +239,13 @@
   #         #
 
   services.xserver = {
-    # Enable gdm
-    displayManager.gdm.enable = true;
+    displayManager.gdm = {
+      # Enable gdm
+      enable = true;
+
+      # Disable laggy Wayland
+      wayland = false;
+    };
 
     # Use gnome3 as Desktop Manager
     desktopManager.gnome3.enable = true;
@@ -292,7 +297,6 @@
       wget
       tdesktop
       python3
-      numlockx
     ];
   };
 }

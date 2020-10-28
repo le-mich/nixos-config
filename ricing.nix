@@ -9,23 +9,6 @@
   boot.plymouth.enable = true;
 
 
-  #           #
-  ## LIGHTDM ##
-  #           #
-
-  # Set mini-greeter for lightdm
-  #services.xserver.displayManager.lightdm.greeters.mini = {
-  #  enable = true;
-  #  user = "mich";
-  #  extraConfig = ''
-  #    [greeter]
-  #    show-password-label = false
-  #    [greeter-theme]
-  #    background-image = ""
-  #  '';
-  #};
-
-
   #         #
   ## GNOME ##
   #         #
@@ -46,8 +29,8 @@
   fonts = {
     # Install fonts
     fonts = with pkgs; [
-      mononoki
-      fira-code-symbols
+      agave
+      iosevka
     ];
 
     fontconfig = {
@@ -56,8 +39,7 @@
 
       # Monospace font
       defaultFonts.monospace = [
-        "mononoki"
-        "fira-code"
+        "agave"
       ];
     };
   };
