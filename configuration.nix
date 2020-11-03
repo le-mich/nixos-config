@@ -139,6 +139,14 @@
     autoUpgrade.enable = true;
   };
 
+  nix.gc = {
+    # Enable automatic garbage collection
+    automatic = true;
+
+    # Time for the collection
+    dates = "09:00";
+  };
+
   # Allow nonfree software
   nixpkgs.config.allowUnfree = true;
 
@@ -161,6 +169,7 @@
         "wheel"
         "networkmanager"
         "video"
+        "dialout"
       ];
     };
 
