@@ -29,7 +29,6 @@
   fonts = {
     # Install fonts
     fonts = with pkgs; [
-      agave
       iosevka
     ];
 
@@ -39,7 +38,7 @@
 
       # Monospace font
       defaultFonts.monospace = [
-        "agave"
+        "iosevka"
       ];
     };
   };
