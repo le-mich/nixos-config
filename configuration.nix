@@ -133,7 +133,7 @@
 
   system = {
     # NixOS "release"
-    stateVersion = "20.03";
+    stateVersion = "20.09";
 
     # Enable automatic system upgrades
     autoUpgrade.enable = true;
