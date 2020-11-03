@@ -213,24 +213,29 @@
   ## X SERVER ##
   #            #
 
-  services.xserver = {
-    # Enable the X11 server
-    enable = true;
-  
-    # Set it layout for X
-    layout = "it";
-    xkbOptions = "eurosign:e";
-
-    libinput = {
-      # Enable touchpad
+  services = {
+    xserver = {
+      # Enable the X11 server
       enable = true;
+  
+      # Set it layout for X
+      layout = "it";
+      xkbOptions = "eurosign:e";
 
-      # Set natural scrolling for libinput
-      naturalScrolling = true;
+      libinput = {
+        # Enable touchpad
+        enable = true;
+
+        # Set natural scrolling for libinput
+        naturalScrolling = true;
+      };
+
+      # Select video drivers
+      videoDrivers = [ "intel" ];
     };
 
-    # Select video drivers
-    videoDrivers = [ "intel" ];
+    # Start picom compositor
+    picom.enable = true;
   };
 
 
