@@ -5,9 +5,6 @@
   ## ENVIRONMENT ##
   #               #
 
-  # Install and configure Java
-  programs.java.enable = true;
-
   environment = {
     # Set environment variables
     variables = {
@@ -17,6 +14,9 @@
 
     # Packages installed in system profile
     systemPackages = with pkgs; [
+      teams
+      zeal
+      openjdk14
       scala
       gnumake
       git
