@@ -281,7 +281,6 @@
     pkgs.gnome3.cheese
     pkgs.gnome3.epiphany
     pkgs.gnome3.geary
-    pkgs.gnome3.gedit
     pkgs.gnome3.gnome-contacts
     pkgs.gnome3.gnome-maps
     pkgs.gnome3.gnome-music
@@ -304,13 +303,16 @@
     systemPackages = with pkgs; [
       microcodeIntel
       firefox
+      falkon
       spotify
       vlc
       gimp
       powertop
       wget
       tdesktop
+      discord
       python3
+      unzip
     ];
   };
 }
