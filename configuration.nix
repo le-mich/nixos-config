@@ -44,8 +44,8 @@
   #              #
 
   boot = {
-    # Add NTFS support
-    supportedFilesystems = [ "ntfs" ];
+    # Zen Kernel for responsiveness
+    kernelPackages = pkgs.linuxPackages_zen;
 
     # Kernel parameters, noaer silences Active State Power Management errors
     kernelParams = [
@@ -53,6 +53,9 @@
       "splash"
       "pci=noaer"
     ];
+
+    # Add NTFS support
+    supportedFilesystems = [ "ntfs" ];
 
     loader = {
       grub = {
