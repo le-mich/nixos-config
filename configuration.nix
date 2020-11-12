@@ -33,7 +33,6 @@
   # Include hardware scan results and contextual .nix configurations
   imports = [ 
     ./hardware-configuration.nix
-    ./vscode.nix
     ./ricing.nix
     ./TSP.nix
   ];
@@ -171,6 +170,7 @@
       extraGroups = [
         "wheel"
         "networkmanager"
+        "audio"
         "video"
         "dialout"
       ];
@@ -307,6 +307,8 @@
       microcodeIntel
       firefox
       falkon
+      bitwarden
+      bitwarden-cli
       spotify
       vlc
       gimp

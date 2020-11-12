@@ -14,6 +14,7 @@
 
     # Packages installed in system profile
     systemPackages = with pkgs; [
+      vscode
       teams
       zeal
       openjdk14
