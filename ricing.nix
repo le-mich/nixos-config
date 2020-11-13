@@ -21,6 +21,9 @@
     chrome-gnome-shell.enable = true;
   };
 
+  # Qt like Gnome
+  qt5.platformTheme = "gnome";
+
 
   #         #
   ## FONTS ##
