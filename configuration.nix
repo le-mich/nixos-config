@@ -277,6 +277,9 @@
 
     # Add GLib network extensions
     glib-networking.enable = true;
+
+    # Add Keyring
+    gnome-keyring.enable = true;
   };
 
   # Remove unwanted Gnome software
@@ -318,6 +321,7 @@
       discord
       python3
       unzip
+      gnome3.gnome-todo
     ];
   };
 }
