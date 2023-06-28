@@ -13,16 +13,32 @@
   ## GNOME ##
   #         #
 
-  services.gnome3 = {
+  services.gnome = {
     # Add Gnome Shell services
     core-shell.enable = true;
  
     # Enable Chrome Gnome Shell host connector to install extensions
-    chrome-gnome-shell.enable = true;
+    gnome-browser-connector.enable = true;
   };
 
   # Qt like Gnome
-  qt5.platformTheme = "gnome";
+  qt.platformTheme = "gnome";
+
+
+  #        #
+  ## HYPR ##
+  #        #
+
+  programs.hyprland = {
+    # Enable Hyprland
+    enable = true;
+
+    # xwayland compatibility layer
+    xwayland.enable = true;
+
+    # patches for nvidia driver
+    nvidiaPatches = true;
+  };
 
 
   #         #
@@ -32,7 +48,7 @@
   fonts = {
     # Install fonts
     fonts = with pkgs; [
-      iosevka
+      nerdfonts
     ];
 
     fontconfig = {
@@ -40,9 +56,15 @@
       antialias = true;
 
       # Monospace font
-      defaultFonts.monospace = [
-        "iosevka"
-      ];
+      defaultFonts = {
+        monospace = [
+          "JetBrainsMono Nerd Font"
+        ];
+
+        emoji = [
+          "Noto Color Emoji"
+        ];
+      };
     };
   };
 
@@ -52,9 +74,14 @@
   #               #
 
   environment.systemPackages = with pkgs; [
+    gnome.gnome-tweaks
+    gnome-randr
+    gnome-extension-manager
+    gnomeExtensions.caffeine
     neofetch
-    zafiro-icons
-    gnomeExtensions.gsconnect
-    gnome3.gnome-tweaks
+    papirus-icon-theme
+    paperview
+    spicetify-cli
+    swww
   ];
 }

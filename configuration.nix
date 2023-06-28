@@ -34,7 +34,6 @@
   imports = [ 
     ./hardware-configuration.nix
     ./ricing.nix
-    ./TSP.nix
   ];
 
 
@@ -50,44 +49,20 @@
     kernelParams = [
       "quiet"
       "splash"
-      "pci=noaer"
     ];
 
     # Add NTFS support
-    supportedFilesystems = [ "ntfs" ];
+    supportedFilesystems = [
+      "ntfs"
+      "btrfs"
+    ];
 
     loader = {
-      grub = {
-        # Use Grub v2
-        enable = true;
-        version = 2;
+      # systemd-boot boot loader
+      systemd-boot.enable = true;
 
-        # Enable efi support for Grub
-        efiSupport = true;
-
-        # Don't install Grub on devices
-        device = "nodev";
-
-        # Add Windows 10 entry
-        extraEntries = ''
-          menuentry "Windows 10" {
-            insmod part_gpt
-            insmod fat
-            insmod search_fs_uuid
-            insmod chain
-            search --fs-uuid --set=root CEC9-765E
-            chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-          }
-        '';
-      };
-
-      efi = {
-        # Let the system modify EFI variables
-        canTouchEfiVariables = true;
-
-        # Set the correct mountpoint
-        efiSysMountPoint = "/boot/efi";
-      };
+      # Let the system modify EFI variables
+      efi.canTouchEfiVariables = true;
     };
   };
 
@@ -98,24 +73,13 @@
 
   networking = {
     # Set hostname
-    hostName = "momi-pls";
+    hostName = "nixed";
 
-    # The global useDHCP flag is deprecated and explicitly set to false
-    useDHCP = false;
- 
-    interfaces = {
-      # Per-interface useDHCP
-      enp2s0.useDHCP = true;
-      wlp3s0.useDHCP = true;
-    };
+    # Use NetworkManager
+    networkmanager.enable = true;
 
-    networkmanager = {
-      # Use NetworkManager
-      enable = true;
-
-      # Activate NetworkManager WiFi powersave
-      wifi.powersave = true;
-    };
+    # Explicitly disable firewall
+    firewall.enable = false;
   };
 
   services = {
@@ -135,7 +99,7 @@
 
   system = {
     # NixOS "release"
-    stateVersion = "20.09";
+    stateVersion = "23.05";
 
     # Enable automatic system upgrades
     autoUpgrade.enable = true;
@@ -152,32 +116,50 @@
   # Allow nonfree software
   nixpkgs.config.allowUnfree = true;
 
+  # Enable flatpak
+  services.flatpak.enable = true;
+
   # Set time zone
   time.timeZone = "Europe/Rome";
 
-  # Set default locale
-  i18n.defaultLocale = "en_GB.UTF-8";
+  i18n = {
+    # Set default language
+    defaultLocale = "en_GB.UTF-8";
+
+    # Set IT locale options
+    extraLocaleSettings = {
+      LC_ADDRESS = "it_IT.UTF-8";
+      LC_IDENTIFICATION = "it_IT.UTF-8";
+      LC_MEASUREMENT = "it_IT.UTF-8";
+      LC_MONETARY = "it_IT.UTF-8";
+      LC_NAME = "it_IT.UTF-8";
+      LC_NUMERIC = "it_IT.UTF-8";
+      LC_PAPER = "it_IT.UTF-8";
+      LC_TELEPHONE = "it_IT.UTF-8";
+      LC_TIME = "it_IT.UTF-8";
+    };
+  };
 
   # Use X server keymap
   console.useXkbConfig = true;
 
-  users = {
-    # Personal account definition
-    users.mich = {
-      isNormalUser = true;
-      passwordFile = "./mich-password.txt";
-      uid = 1000;
-      extraGroups = [
-        "wheel"
-        "networkmanager"
-        "audio"
-        "video"
-        "dialout"
-      ];
-    };
-
-    # Set GID for group users
-    groups.users.gid = 100;
+  # Personal account definition
+  users.users.mich = {
+    isNormalUser = true;
+    passwordFile = "./mich-password.txt";
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "audio"
+      "video"
+      "dialout"
+    ];
+    packages = with pkgs; [
+      bitwarden
+      spotify
+      gimp
+      tdesktop
+    ];
   };
 
 
@@ -189,36 +171,32 @@
     # Update intel microcode
     cpu.intel.updateMicrocode = true;
 
-    # Disable discrete GPU completely (?)
-    nvidiaOptimus.disable = true;
-
-    # Use pulseaudio audio management
-    pulseaudio.enable = true;
-
-    # Enable brightness control with xbacklight
-    acpilight.enable = true;
-
-    # Add bluetooth hardware support
-    bluetooth.enable = true;
+    # Disable pulseaudio
+    pulseaudio.enable = false;
   };
 
   # Enable sound
   sound.enable = true;
 
+  services.pipewire = {
+    # Use pipewire audio management
+    enable = true;
+
+    # Alsa replacement
+    alsa = {
+      enable = true;
+      support32Bit = true;
+    };
+
+    # Pulseaudio replacement
+    pulse.enable = true;
+  };
+
   # Enable CUPS print framework
   services.printing.enable = true;
 
-  # Mount NTFS drive as rw in /home/mich
-  fileSystems."/home/mich" = {
-    device = "/dev/disk/by-uuid/01D3E3A71D5464B0";
-    fsType = "ntfs";
-    options = [
-      "rw"
-      "uid=1000"
-      "gid=100"
-      "umask=0022"
-    ];
-  };
+  # D-Bus secure scheduling
+  security.rtkit.enable = true;
 
 
   #            #
@@ -230,24 +208,9 @@
       # Enable the X11 server
       enable = true;
   
-      # Set it layout for X
-      layout = "it";
-      xkbOptions = "eurosign:e";
-
-      libinput = {
-        # Enable touchpad
-        enable = true;
-
-        # Set natural scrolling for libinput
-        naturalScrolling = true;
-      };
-
-      # Select video drivers
-      videoDrivers = [ "intel" ];
+      # Set Eurkey layout for X
+      layout = "eu";
     };
-
-    # Start picom compositor
-    picom.enable = true;
   };
 
 
@@ -256,19 +219,14 @@
   #         #
 
   services.xserver = {
-    displayManager.gdm = {
-      # Enable gdm
-      enable = true;
+    # Enable gdm
+    displayManager.gdm.enable = true;
 
-      # Disable laggy Wayland
-      wayland = false;
-    };
-
-    # Use gnome3 as Desktop Manager
-    desktopManager.gnome3.enable = true;
+    # Use gnome as Desktop Manager
+    desktopManager.gnome.enable = true;
   };
 
-  services.gnome3 = {
+  services.gnome = {
     # Enable essential services for Gnome
     core-os-services.enable = true;
 
@@ -283,14 +241,19 @@
   };
 
   # Remove unwanted Gnome software
-  environment.gnome3.excludePackages = [
-    pkgs.gnome3.cheese
-    pkgs.gnome3.epiphany
-    pkgs.gnome3.geary
-    pkgs.gnome3.gnome-contacts
-    pkgs.gnome3.gnome-maps
-    pkgs.gnome3.gnome-music
-    pkgs.gnome3.gnome-software
+  environment.gnome.excludePackages = with pkgs; [
+    gnome.cheese
+    gnome.epiphany
+    gnome.geary
+    gnome.yelp
+    gnome.gnome-weather
+    gnome.gnome-contacts
+    gnome.gnome-maps
+    gnome.gnome-music
+    gnome.gnome-software
+    gnome.gnome-shell-extensions
+    gnome-tour
+    gnome-console
   ];
 
 
@@ -298,30 +261,37 @@
   ## ENVIRONMENT ##
   #               #
 
-  # Vim as default
-  programs.vim.defaultEditor = true;
-
   environment = {
     # Shell aliases I need
     shellAliases = { ":q" = "exit"; };
 
     # Packages installed in system profile
     systemPackages = with pkgs; [
-      microcodeIntel
-      firefox
-      falkon
+      alacritty
       bitwarden
-      bitwarden-cli
-      spotify
-      vlc
+      firefox
       gimp
-      powertop
-      wget
+      git
+      helix
+      jetbrains.pycharm-community
+      microcodeIntel
+      python310Full
+      spotify
       tdesktop
-      discord
-      python3
+      thunderbird
       unzip
-      gnome3.gnome-todo
+      vlc
+      wezterm
+      wget
     ];
   };
+
+  # Gnupg agent
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+  };
+
+  # OpenSSH server
+  services.openssh.enable = true;
 }
